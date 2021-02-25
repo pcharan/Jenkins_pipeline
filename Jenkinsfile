@@ -1,21 +1,27 @@
 Code_changes = getGitChanges()
 pipeline {
     agent any
+    parameters{
+        choice(name: "Version", choices: ['1.1.20', '1.2.1', '1.3.0'], description:'')
+        booleanParam(name: "execute", defaultvalue: true, description:'')
+        string(name: "NAME", defaultvalue: "Charan", description:"")
+    }
     stages {
       stage("build"){
           when{
               expression {
-                  BRANCH_NAME = 'main' && Code_changes == true
+                  params.execute
               }
           }
         steps {
           echo 'building the application.... '
+          echo "Name Parameter value ${params.NAME}"
         }
       }
       stage("test"){
           when{
               expression{
-                  BRANCH_NAME = 'main'
+                  params.execute
               }
           }
         steps {
@@ -25,6 +31,7 @@ pipeline {
       stage("deploy"){
         steps {
           echo 'Deploying the application.... '
+            echo "Choices of Version ${params.Version}"
         }
       }
     }
